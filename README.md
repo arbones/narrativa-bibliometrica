@@ -4,7 +4,7 @@ Servidor **MCP** (stdio) que genera **párrafos cuantitativos en castellano** pa
 
 ## El problema
 
-Las convocatorias del Instituto de Salud Carlos III (ISCIII) exigen cada vez más un **Currículum Vitae Narrativo (CVA)** en el que los investigadores deben contextualizar el impacto de sus publicaciones con indicadores bibliométricos concretos. La [*Guía rápida de indicadores para convocatorias ISCIII*](https://doi.org/10.5281/zenodo.10617727) (Torres-Salinas, 2024) recomienda utilizar los siguientes:
+Las convocatorias del Instituto de Salud Carlos III (ISCIII) exigen cada vez más un **Currículum Vitae Narrativo** en el que los investigadores deben contextualizar el impacto de sus publicaciones con indicadores bibliométricos concretos. La [*Guía rápida de indicadores para convocatorias ISCIII*](https://doi.org/10.5281/zenodo.10617727) (Torres-Salinas, 2024) recomienda utilizar los siguientes:
 
 | Indicador | Nivel | Fuente oficial |
 |----------------------|-----------------|--------------------------------|
@@ -59,13 +59,17 @@ Para cada publicación genera dos párrafos:
 
 ## Instalación
 
+Requisitos: Python \>= 3.10.
+
 ``` bash
+git clone https://github.com/<owner>/isciii-narrativo.git
+cd isciii-narrativo
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e .
 ```
 
-Requisitos: Python \>= 3.10.
+Esto instala el comando `isciii-narrativo` en el entorno virtual.
 
 ## Uso como servidor MCP (stdio)
 
@@ -73,19 +77,59 @@ Requisitos: Python \>= 3.10.
 isciii-narrativo
 ```
 
-### Configuración en Claude Code
+### Configuración en Claude Code (CLI)
 
-Añadir en la configuración de servidores MCP:
+Registrar el servidor una sola vez desde dentro del repositorio (con el entorno virtual activo):
+
+``` bash
+# Global (disponible en todos los proyectos):
+claude mcp add -s user isciii-narrativo -- /ruta/completa/.venv/bin/isciii-narrativo
+
+# Solo para el proyecto actual:
+claude mcp add isciii-narrativo -- /ruta/completa/.venv/bin/isciii-narrativo
+```
+
+O editar manualmente `~/.claude/claude.json`:
 
 ``` json
 {
   "mcpServers": {
     "isciii-narrativo": {
-      "command": "isciii-narrativo"
+      "command": "/ruta/completa/isciii-narrativo/.venv/bin/isciii-narrativo"
     }
   }
 }
 ```
+
+> Usa la **ruta absoluta** al binario del entorno virtual — Claude Code no hereda el entorno virtual activo en el shell.
+
+### Configuración en la aplicación Claude Desktop
+
+Editar `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+
+``` json
+{
+  "mcpServers": {
+    "isciii-narrativo": {
+      "command": "/ruta/completa/isciii-narrativo/.venv/bin/isciii-narrativo"
+    }
+  }
+}
+```
+
+Reiniciar Claude Desktop tras guardar.
+
+### Verificar la instalación
+
+En Claude Code:
+
+``` bash
+claude mcp list
+```
+
+`isciii-narrativo` debe aparecer en la lista. Para probarlo:
+
+> "Usa `generar_narrativa` con estos IDs: 10.1038/s41467-024-54080-w"
 
 ## Herramientas disponibles
 
