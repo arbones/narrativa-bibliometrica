@@ -110,20 +110,23 @@ def generar_narrativa(
         date_str = ng.today_str()
 
         def _jcr_fields(jcr_info) -> dict:
-            """Extract JCR fields for NarrativeInput from a JCRInfo or None."""
+            """Extract JCR fields for NarrativeInput from a JCRInfo or None.
+
+            jif_quartile is set to category_quartile so the displayed Q always
+            matches the named category. The CSV-level jif_quartile is a global
+            JIF rank across all journals and cannot be tied to a specific
+            subject category, so it is not used here.
+            """
             if not jcr_info:
                 return {}
             cat_str = None
             if jcr_info.category_name:
                 cat_str = jcr_info.category_name
-                if jcr_info.category_quartile:
-                    cat_str += f" (Q{jcr_info.category_quartile}"
-                    if jcr_info.category_rank:
-                        cat_str += f", {jcr_info.category_rank}"
-                    cat_str += ")"
+                if jcr_info.category_rank:
+                    cat_str += f", {jcr_info.category_rank}"
             return dict(
                 jif=jcr_info.jif,
-                jif_quartile=jcr_info.jif_quartile,
+                jif_quartile=jcr_info.category_quartile,
                 jif_category=cat_str,
             )
 
